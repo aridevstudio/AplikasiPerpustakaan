@@ -69,7 +69,7 @@ $stmt->execute();
 <section class="home-section">
   <div class="mt-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
-      <h2 class="fw-bold text-dark mb-0">Data Peminjaman</h2>
+      <h2 class="fw-bold text-dark mb-0">Data Peminjaman ibu</h2>
       <div class="d-flex align-items-between gap-3">
         <!-- Filter Status -->
         <div class="dropdown rounded-3">
