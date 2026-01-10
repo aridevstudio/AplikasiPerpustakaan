@@ -6,16 +6,37 @@ if (isset($_GET['kode_kembali'])) {
 
     // Ambil data pengembalian berdasarkan kode_kembali
     $query = $conn->prepare("
-        SELECT pengembalian.kode_kembali, pengembalian.tgl_kembali, pengembalian.kode_pinjam, 
-               pengembalian.kondisi_buku, pengembalian.denda, pengembalian.status, 
-               pengembalian.pembayaran, anggota.nama AS nama_anggota, 
-               anggota.no_telp, buku.judul_buku, peminjaman.tgl_pinjam, peminjaman.estimasi_pinjam
-        FROM pengembalian
-        JOIN peminjaman ON pengembalian.kode_pinjam = peminjaman.kode_pinjam
-        JOIN anggota ON peminjaman.nim = anggota.nim
-        JOIN buku ON peminjaman.kode_buku = buku.kode_buku
-        WHERE pengembalian.kode_kembali = :kode_kembali
-    ");
+    SELECT 
+        pg.kode_kembali,
+        pg.tgl_kembali,
+        pg.kode_pinjam,
+        pg.denda,
+        pg.pembayaran,
+        pg.status,
+
+        p.tgl_pinjam,
+        p.estimasi_pinjam,
+
+        a.nama AS nama_anggota,
+        a.no_telp,
+
+        GROUP_CONCAT(b.judul_buku SEPARATOR ', ') AS judul_buku,
+        GROUP_CONCAT(dp.kondisi_buku_pinjam SEPARATOR ', ') AS kondisi_buku
+
+    FROM pengembalian pg
+    JOIN peminjaman p 
+        ON pg.kode_pinjam = p.kode_pinjam
+    JOIN anggota a 
+        ON p.nim = a.nim
+    JOIN detail_peminjaman dp 
+        ON p.kode_pinjam = dp.kode_pinjam
+    JOIN buku b 
+        ON dp.kode_buku = b.kode_buku
+
+    WHERE pg.kode_kembali = :kode_kembali
+    GROUP BY pg.kode_kembali
+");
+
     $query->execute([':kode_kembali' => $kode_kembali]);
     $data = $query->fetch(PDO::FETCH_ASSOC);
 

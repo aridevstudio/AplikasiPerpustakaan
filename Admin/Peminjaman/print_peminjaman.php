@@ -5,15 +5,24 @@ if (isset($_GET['kode_pinjam'])) {
     $kode_pinjam = $_GET['kode_pinjam'];
 
     // Ambil data peminjaman berdasarkan ID
-    $query = $conn->prepare("
-        SELECT peminjaman.kode_pinjam, anggota.nama AS nama_anggota, buku.judul_buku, 
-        petugas.nama_petugas, peminjaman.tgl_pinjam, peminjaman.estimasi_pinjam, peminjaman.kondisi_buku_pinjam 
-        FROM peminjaman
-        INNER JOIN anggota ON peminjaman.nim = anggota.nim
-        INNER JOIN buku ON peminjaman.kode_buku = buku.kode_buku
-        INNER JOIN petugas ON peminjaman.id_petugas = petugas.id_petugas
-        WHERE peminjaman.kode_pinjam = :kode_pinjam
-    ");
+  $query = $conn->prepare("
+    SELECT 
+        p.kode_pinjam,
+        a.nama AS nama_anggota,
+        GROUP_CONCAT(b.judul_buku SEPARATOR ', ') AS judul_buku,
+        pt.nama_petugas,
+        p.tgl_pinjam,
+        p.estimasi_pinjam,
+        GROUP_CONCAT(dp.kondisi_buku_pinjam SEPARATOR ', ') AS kondisi_buku_pinjam
+    FROM peminjaman p
+    INNER JOIN anggota a ON p.nim = a.nim
+    INNER JOIN detail_peminjaman dp ON p.kode_pinjam = dp.kode_pinjam
+    INNER JOIN buku b ON dp.kode_buku = b.kode_buku
+    INNER JOIN petugas pt ON p.id_petugas = pt.id_petugas
+    WHERE p.kode_pinjam = :kode_pinjam
+    GROUP BY p.kode_pinjam
+");
+
     $query->execute([':kode_pinjam' => $kode_pinjam]);
     $data = $query->fetch(PDO::FETCH_ASSOC);
 

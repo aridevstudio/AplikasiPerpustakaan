@@ -1,22 +1,23 @@
 <?php
-session_start();  // Memastikan sesi dimulai
-require_once '../../Config/koneksi.php';  // Menghubungkan ke file koneksi database
+session_start();
+require_once '../../Config/koneksi.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $kode_pinjam = $_POST['kode_pinjam'];
-    $kondisi_buku = $_POST['kondisi_buku']; // Menambahkan input kondisi buku
-    $tgl_kembali = date('Y-m-d'); // Tanggal saat ini sebagai tanggal kembali
-    $denda = 0;
-    $status_pembayaran = 'Tidak Ada'; // Default pembayaran tidak ada
-    $status = 'Lunas'; // Default status lunas
 
-    // Ambil data peminjaman berdasarkan kode_pinjam
+    $kode_pinjam   = $_POST['kode_pinjam'];
+    $kondisi_buku  = $_POST['kondisi_buku'];
+    $tgl_kembali   = date('Y-m-d');
+    $denda         = 0;
+    $pembayaran    = 'Tidak Ada';
+    $status        = 'Lunas';
+
+    // 🔹 Ambil estimasi pinjam
     $stmt = $conn->prepare("
-        SELECT tgl_pinjam, kode_buku, estimasi_pinjam
-        FROM peminjaman 
+        SELECT estimasi_pinjam
+        FROM peminjaman
         WHERE kode_pinjam = :kode_pinjam
     ");
-    $stmt->execute([':kode_pinjam' => $kode_pinjam]);
+    $stmt->execute(['kode_pinjam' => $kode_pinjam]);
     $peminjaman = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$peminjaman) {
@@ -25,80 +26,109 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    $kode_buku = $peminjaman['kode_buku']; // Ambil ID buku untuk pembaruan stok
-    $estimasi_pinjam = $peminjaman['estimasi_pinjam']; // Ambil estimasi pinjam
+    $estimasi_pinjam = $peminjaman['estimasi_pinjam'];
 
-    // Hitung keterlambatan
-    $hari_terlambat = max((strtotime($tgl_kembali) - strtotime($estimasi_pinjam)) / (60 * 60 * 24), 0);
+    // 🔹 Hitung keterlambatan
+    $hari_terlambat = max(
+        floor((strtotime($tgl_kembali) - strtotime($estimasi_pinjam)) / 86400),
+        0
+    );
 
-    // Jika tidak terlambat, set status dan pembayaran
-    if ($hari_terlambat <= 0) {
-        $status = 'Lunas';
-        $status_pembayaran = 'Tidak Ada'; // Tidak ada pembayaran jika tidak terlambat
-    } else {
+    if ($hari_terlambat > 0) {
+        $denda += $hari_terlambat * 5000;
         $status = 'Belum Lunas';
-        $denda += $hari_terlambat * 5000; // Tambahkan denda Rp5.000 per hari keterlambatan
     }
 
-    // Hitung denda tambahan berdasarkan kondisi buku
+    // 🔹 Denda kondisi buku
     if ($kondisi_buku === 'rusak') {
-        $denda += 20000; // Denda Rp20.000 untuk buku rusak
-        $status = 'Belum Lunas'; // Harus belum lunas jika buku rusak
+        $denda += 20000;
+        $status = 'Belum Lunas';
     } elseif ($kondisi_buku === 'hilang') {
-        $denda += 50000; // Denda Rp50.000 untuk buku hilang
-        $status = 'Belum Lunas'; // Harus belum lunas jika buku hilang
+        $denda += 50000;
+        $status = 'Belum Lunas';
     }
 
-    // Generate kode_kembali otomatis
+    // 🔹 Generate kode_kembali
     $lastKode = $conn->query("
-        SELECT kode_kembali 
-        FROM pengembalian 
-        ORDER BY kode_kembali DESC 
+        SELECT kode_kembali
+        FROM pengembalian
+        ORDER BY kode_kembali DESC
         LIMIT 1
     ")->fetch(PDO::FETCH_ASSOC);
-    $newNumber = isset($lastKode['kode_kembali']) ? (int)substr($lastKode['kode_kembali'], 2) + 1 : 1;
-    $kode_kembali = "KB" . str_pad($newNumber, 3, "0", STR_PAD_LEFT);
 
-    // Simpan ke tabel pengembalian
-    $stmt = $conn->prepare("
-        INSERT INTO pengembalian (kode_kembali, kode_pinjam, tgl_kembali, kondisi_buku, denda, status, pembayaran) 
-        VALUES (:kode_kembali, :kode_pinjam, :tgl_kembali, :kondisi_buku, :denda, :status, :pembayaran)
-    ");
+    $no = $lastKode ? (int)substr($lastKode['kode_kembali'], 2) + 1 : 1;
+    $kode_kembali = 'KB' . str_pad($no, 3, '0', STR_PAD_LEFT);
+
     try {
+        $conn->beginTransaction();
+
+        // 1️⃣ Insert pengembalian
+        $stmt = $conn->prepare("
+            INSERT INTO pengembalian
+            (kode_kembali, kode_pinjam, tgl_kembali, denda, pembayaran)
+            VALUES
+            (:kode_kembali, :kode_pinjam, :tgl_kembali, :denda, :pembayaran)
+        ");
         $stmt->execute([
-            ':kode_kembali' => $kode_kembali,
-            ':kode_pinjam' => $kode_pinjam,
-            ':tgl_kembali' => $tgl_kembali,
-            ':kondisi_buku' => $kondisi_buku,
-            ':denda' => $denda,
-            ':status' => $status,
-            ':pembayaran' => $status_pembayaran
+            'kode_kembali' => $kode_kembali,
+            'kode_pinjam'  => $kode_pinjam,
+            'tgl_kembali'  => $tgl_kembali,
+            'denda'        => $denda,
+            'pembayaran'   => $pembayaran
         ]);
 
-        // Pembaruan stok buku berdasarkan kondisi buku
-        if ($kondisi_buku === 'bagus' || $kondisi_buku === 'rusak') {
-            $conn->prepare("
-                UPDATE buku 
-                SET stok = stok + 1 
-                WHERE kode_buku = :kode_buku
-            ")->execute([':kode_buku' => $kode_buku]);
-        }
-        // Jika kondisi buku hilang, stok tidak diubah
+        // 2️⃣ Update kondisi buku
+        $stmt = $conn->prepare("
+            UPDATE detail_peminjaman
+            SET kondisi_buku_pinjam = :kondisi
+            WHERE kode_pinjam = :kode_pinjam
+        ");
+        $stmt->execute([
+            'kondisi'     => $kondisi_buku,
+            'kode_pinjam' => $kode_pinjam
+        ]);
 
-        $_SESSION['message'] = "Pengembalian berhasil ditambahkan! Kode Kembali: $kode_kembali, Denda: Rp" . number_format($denda, 0, ',', '.');
+        // 3️⃣ Update stok (kecuali hilang)
+        if ($kondisi_buku !== 'hilang') {
+            $stmt = $conn->prepare("
+                UPDATE buku b
+                JOIN detail_peminjaman dp
+                    ON b.kode_buku = dp.kode_buku
+                SET b.stok = b.stok + 1
+                WHERE dp.kode_pinjam = :kode_pinjam
+            ");
+            $stmt->execute(['kode_pinjam' => $kode_pinjam]);
+        }
+
+        // 4️⃣ Update status peminjaman
+        $stmt = $conn->prepare("
+            UPDATE peminjaman
+            SET status = 'Dikembalikan'
+            WHERE kode_pinjam = :kode_pinjam
+        ");
+        $stmt->execute(['kode_pinjam' => $kode_pinjam]);
+
+        $conn->commit();
+
+        $_SESSION['message'] =
+            "Pengembalian berhasil | Kode: $kode_kembali | Denda: Rp " .
+            number_format($denda, 0, ',', '.');
+
         header('Location: pengembalian.php');
         exit;
-    } catch (PDOException $e) {
-        $_SESSION['message'] = "Gagal menambahkan pengembalian: " . $e->getMessage();
+
+    } catch (Exception $e) {
+        $conn->rollBack();
+        $_SESSION['message'] = 'Gagal: ' . $e->getMessage();
         header('Location: pengembalian.php');
         exit;
     }
 }
 
-// Ambil data peminjaman yang belum dikembalikan
+// Data peminjaman belum dikembalikan
 $peminjaman = $conn->query("
-    SELECT kode_pinjam 
-    FROM peminjaman 
+    SELECT kode_pinjam
+    FROM peminjaman
     WHERE kode_pinjam NOT IN (SELECT kode_pinjam FROM pengembalian)
 ")->fetchAll(PDO::FETCH_ASSOC);
 ?>

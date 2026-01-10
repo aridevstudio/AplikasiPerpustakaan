@@ -7,42 +7,62 @@ $limit = 10; // Jumlah data per halaman
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1; // Halaman saat ini
 $offset = ($page - 1) * $limit;
 
+// Filter
+$filter = isset($_GET['filter']) ? $_GET['filter'] : 'semua';
 
-$filter = isset($_GET['filter']) ? $_GET['filter'] : 'semua'; // Menangani filter
-
-$whereClause = '';
+// ---------------------------
+// WHERE clause untuk COUNT query (tanpa alias)
+$whereCount = '';
 if ($filter === 'belum_lunas') {
-  $whereClause = "WHERE pengembalian.status = 'Belum Lunas'";
+    $whereCount = "WHERE status = 'Belum Lunas'";
 } elseif ($filter === 'lunas') {
-  $whereClause = "WHERE pengembalian.status = 'Lunas'";
+    $whereCount = "WHERE status = 'Lunas'";
 }
 
 // Hitung total data
-$totalQuery = $conn->query("SELECT COUNT(*) AS total FROM pengembalian $whereClause");
+$totalQuery = $conn->query("SELECT COUNT(*) AS total FROM pengembalian $whereCount");
 $totalResult = $totalQuery->fetch(PDO::FETCH_ASSOC);
 $totalRows = $totalResult['total'];
 $totalPages = ceil($totalRows / $limit);
 
-// Update query untuk menambahkan kondisi WHERE berdasarkan filter
+// ---------------------------
+// WHERE clause untuk SELECT query utama (pakai alias `k`)
+$whereSelect = '';
+if ($filter === 'belum_lunas') {
+    $whereSelect = "WHERE k.status = 'Belum Lunas'";
+} elseif ($filter === 'lunas') {
+    $whereSelect = "WHERE k.status = 'Lunas'";
+}
+
+// Query data
 $result = $conn->prepare("
-    SELECT pengembalian.kode_kembali, pengembalian.tgl_kembali, pengembalian.kode_pinjam, 
-           pengembalian.kondisi_buku, pengembalian.denda, pengembalian.status, 
-           pengembalian.pembayaran, anggota.nama AS nama_anggota, 
-           anggota.no_telp, buku.judul_buku 
-    FROM pengembalian
-    JOIN peminjaman ON pengembalian.kode_pinjam = peminjaman.kode_pinjam
-    JOIN anggota ON peminjaman.nim = anggota.nim
-    JOIN buku ON peminjaman.kode_buku = buku.kode_buku
-    $whereClause
-    ORDER BY pengembalian.tgl_kembali DESC
+    SELECT 
+        k.kode_kembali,
+        k.tgl_kembali,
+        k.kode_pinjam,
+        GROUP_CONCAT(DISTINCT b.judul_buku SEPARATOR ', ') AS judul_buku,
+        GROUP_CONCAT(DISTINCT dp.kondisi_buku_pinjam SEPARATOR ', ') AS kondisi_buku,
+        k.denda,
+        k.pembayaran,
+        k.status,
+        a.nama AS nama_anggota,
+        a.no_telp
+    FROM pengembalian k
+    INNER JOIN peminjaman p ON k.kode_pinjam = p.kode_pinjam
+    INNER JOIN anggota a ON p.nim = a.nim
+    INNER JOIN detail_peminjaman dp ON p.kode_pinjam = dp.kode_pinjam
+    INNER JOIN buku b ON dp.kode_buku = b.kode_buku
+    $whereSelect
+    GROUP BY k.kode_kembali
+    ORDER BY k.tgl_kembali DESC
     LIMIT :limit OFFSET :offset
 ");
-
 
 $result->bindValue(':limit', $limit, PDO::PARAM_INT);
 $result->bindValue(':offset', $offset, PDO::PARAM_INT);
 $result->execute();
 ?>
+
 
 <section class="home-section">
   <div class="mt-5">

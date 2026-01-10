@@ -38,7 +38,7 @@ $tanggal_hari_ini = date('jS F Y'); // Format: 14th Aug 2023
 
 // Query untuk peminjaman yang perlu dikembalikan
 $queryPinjamKembali = "
-    SELECT p.kode_pinjam, a.nama, p.kode_buku, p.estimasi_pinjam
+    SELECT p.kode_pinjam, a.nama, p.estimasi_pinjam
     FROM peminjaman p
     JOIN anggota a ON p.nim = a.nim
     WHERE p.estimasi_pinjam < CURDATE() AND p.status = 'Dipinjam'

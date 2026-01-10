@@ -2,46 +2,69 @@
 require_once '../../Config/koneksi.php';
 include '../Layouts/header.php';
 
-// Pagination logic
-$limit = 5; // Jumlah data per halaman
-$page = isset($_GET['page']) ? (int)$_GET['page'] : 1; // Halaman saat ini
+/* =======================
+   PAGINATION
+======================= */
+$limit  = 5;
+$page   = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $limit;
 
-// Filter status
-$filter = isset($_GET['filter']) ? $_GET['filter'] : 'semua';
-$whereClause = '';
+/* =======================
+   FILTER
+======================= */
+$filter = $_GET['filter'] ?? 'semua';
+$where  = '';
+
 if ($filter === 'dipinjam') {
-  $whereClause = "WHERE NOT EXISTS (SELECT 1 FROM pengembalian WHERE pengembalian.kode_pinjam = peminjaman.kode_pinjam)";
+  $where = "WHERE k.kode_pinjam IS NULL";
 } elseif ($filter === 'dikembalikan') {
-  $whereClause = "WHERE EXISTS (SELECT 1 FROM pengembalian WHERE pengembalian.kode_pinjam = peminjaman.kode_pinjam)";
+  $where = "WHERE k.kode_pinjam IS NOT NULL";
 }
 
-// Hitung total data
-$totalQuery = $conn->query("SELECT COUNT(*) AS total FROM peminjaman $whereClause");
-$totalResult = $totalQuery->fetch(PDO::FETCH_ASSOC);
-$totalRows = $totalResult['total'];
+/* =======================
+   COUNT DATA
+======================= */
+$totalQuery = $conn->query("
+  SELECT COUNT(DISTINCT p.kode_pinjam) AS total
+  FROM peminjaman p
+  LEFT JOIN pengembalian k ON p.kode_pinjam = k.kode_pinjam
+  $where
+");
+$totalRows  = $totalQuery->fetch(PDO::FETCH_ASSOC)['total'];
 $totalPages = ceil($totalRows / $limit);
 
-// Ambil data sesuai halaman dan filter
+/* =======================
+   DATA QUERY
+======================= */
 $query = "
-    SELECT peminjaman.kode_pinjam, anggota.nama AS nama_anggota, anggota.no_telp, buku.judul_buku, 
-    petugas.nama_petugas, peminjaman.tgl_pinjam, peminjaman.estimasi_pinjam, 
-    peminjaman.kondisi_buku_pinjam, 
-    IF(EXISTS (SELECT 1 FROM pengembalian WHERE pengembalian.kode_pinjam = peminjaman.kode_pinjam), 'Dikembalikan', 'Dipinjam') AS status
-    FROM peminjaman
-    INNER JOIN anggota ON peminjaman.nim = anggota.nim
-    INNER JOIN buku ON peminjaman.kode_buku = buku.kode_buku
-    INNER JOIN petugas ON peminjaman.id_petugas = petugas.id_petugas
-    $whereClause
-    ORDER BY peminjaman.tgl_pinjam DESC
-    LIMIT :limit OFFSET :offset
+  SELECT 
+    p.kode_pinjam,
+    a.nama AS nama_anggota,
+    a.no_telp,
+    GROUP_CONCAT(b.judul_buku SEPARATOR ', ') AS judul_buku,
+    pt.nama_petugas,
+    p.tgl_pinjam,
+    p.estimasi_pinjam,
+    GROUP_CONCAT(dp.kondisi_buku_pinjam SEPARATOR ', ') AS kondisi_buku_pinjam,
+    IF(k.kode_pinjam IS NULL, 'Dipinjam', 'Dikembalikan') AS status
+  FROM peminjaman p
+  INNER JOIN anggota a ON p.nim = a.nim
+  INNER JOIN detail_peminjaman dp ON p.kode_pinjam = dp.kode_pinjam
+  INNER JOIN buku b ON dp.kode_buku = b.kode_buku
+  INNER JOIN petugas pt ON p.id_petugas = pt.id_petugas
+  LEFT JOIN pengembalian k ON p.kode_pinjam = k.kode_pinjam
+  $where
+  GROUP BY p.kode_pinjam
+  ORDER BY p.tgl_pinjam DESC
+  LIMIT :limit OFFSET :offset
 ";
 
-$result = $conn->prepare($query);
-$result->bindValue(':limit', $limit, PDO::PARAM_INT);
-$result->bindValue(':offset', $offset, PDO::PARAM_INT);
-$result->execute();
+$stmt = $conn->prepare($query);
+$stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+$stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+$stmt->execute();
 ?>
+
 
 <section class="home-section">
   <div class="mt-5">
@@ -101,7 +124,7 @@ $result->execute();
           </tr>
         </thead>
         <tbody>
-          <?php while ($row = $result->fetch(PDO::FETCH_ASSOC)): ?>
+          <?php while ($row = $stmt->fetch(PDO::FETCH_ASSOC)): ?>
             <tr style="font-size: 15px;">
               <td class="text-center"><?= $row['kode_pinjam']; ?></td>
               <td style="font-weight: 600;"><?= $row['nama_anggota']; ?></td>

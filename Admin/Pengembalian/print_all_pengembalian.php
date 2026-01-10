@@ -3,15 +3,37 @@ require_once '../../Config/koneksi.php';
 
 // Ambil seluruh data pengembalian
 $stmt = $conn->prepare("
-    SELECT pengembalian.kode_kembali, pengembalian.tgl_kembali, pengembalian.kode_pinjam, 
-           pengembalian.kondisi_buku, pengembalian.denda, pengembalian.status, 
-           pengembalian.pembayaran, anggota.nama AS nama_anggota, 
-           buku.judul_buku 
-    FROM pengembalian
-    JOIN peminjaman ON pengembalian.kode_pinjam = peminjaman.kode_pinjam
-    JOIN anggota ON peminjaman.nim = anggota.nim
-    JOIN buku ON peminjaman.kode_buku = buku.kode_buku
+    SELECT 
+        pg.kode_kembali,
+        pg.tgl_kembali,
+        pg.kode_pinjam,
+        pg.denda,
+        pg.pembayaran,
+        pg.status,
+
+        p.tgl_pinjam,
+        p.estimasi_pinjam,
+
+        a.nama AS nama_anggota,
+        a.no_telp,
+
+        GROUP_CONCAT(DISTINCT b.judul_buku SEPARATOR ', ') AS judul_buku,
+        GROUP_CONCAT(DISTINCT dp.kondisi_buku_pinjam SEPARATOR ', ') AS kondisi_buku
+
+    FROM pengembalian pg
+    JOIN peminjaman p 
+        ON pg.kode_pinjam = p.kode_pinjam
+    JOIN anggota a 
+        ON p.nim = a.nim
+    JOIN detail_peminjaman dp 
+        ON p.kode_pinjam = dp.kode_pinjam
+    JOIN buku b 
+        ON dp.kode_buku = b.kode_buku
+
+    GROUP BY pg.kode_kembali
+    ORDER BY pg.tgl_kembali DESC
 ");
+
 $stmt->execute();
 $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 

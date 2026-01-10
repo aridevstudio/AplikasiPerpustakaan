@@ -2,22 +2,17 @@
 require_once '../Config/koneksi.php'; // Sesuaikan path dengan struktur folder
 include 'header.php'; // Sesuaikan path dengan struktur folder
 
-// Query untuk mengambil data buku yang paling banyak dipinjam
+// Query untuk mengambil data buku
 $query = $conn->query("
 SELECT 
     b.kode_buku, 
     b.judul_buku, 
     b.cover, 
-    b.penerbit, 
-    COUNT(p.kode_buku) AS jumlah_peminjaman
+    b.penerbit
 FROM 
     buku b
-LEFT JOIN 
-    peminjaman p ON b.kode_buku = p.kode_buku
-GROUP BY 
-    b.kode_buku
 ORDER BY 
-    jumlah_peminjaman DESC
+    b.kode_buku DESC
 LIMIT 6;
 ");
 $buku = $query->fetchAll(PDO::FETCH_ASSOC);
