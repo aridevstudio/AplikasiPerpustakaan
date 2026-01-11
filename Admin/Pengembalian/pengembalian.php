@@ -49,7 +49,7 @@ $result = $conn->prepare("
         a.no_telp
     FROM pengembalian k
     INNER JOIN peminjaman p ON k.kode_pinjam = p.kode_pinjam
-    INNER JOIN anggota a ON p.nim = a.nim
+    INNER JOIN anggota a ON p.nis = a.nis
     INNER JOIN detail_peminjaman dp ON p.kode_pinjam = dp.kode_pinjam
     INNER JOIN buku b ON dp.kode_buku = b.kode_buku
     $whereSelect

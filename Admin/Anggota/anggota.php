@@ -89,7 +89,7 @@ $result->execute();
       <table class="table table-hover align-middle" id="anggotaTable">
         <thead class="bg-primary text-white">
           <tr>
-            <th class="text-center">NIM</th>
+            <th class="text-center">NIS</th>
             <th>Nama</th>
             <th>NO. Telp</th>
             <th>Jenis Kelamin</th>
@@ -103,7 +103,7 @@ $result->execute();
         <tbody>
           <?php while ($row = $result->fetch(PDO::FETCH_ASSOC)): ?>
             <tr style="font-size: 15px;">
-              <td class="text-center"><?= $row['nim']; ?></td>
+              <td class="text-center"><?= $row['nis']; ?></td>
               <td style="font-weight: 600;"><?= $row['nama']; ?></td>
               <td><?= $row['no_telp']; ?></td>
               <td><?= $row['jenis_kelamin']; ?></td>
@@ -120,7 +120,7 @@ $result->execute();
 
 
               <td class="text-center">
-                <button class="btn btn-warning btn-sm rounded-2" data-bs-toggle="modal" data-bs-target="#editAnggotaModal" onclick="loadEditForm('<?= $row['nim']; ?>')">
+                <button class="btn btn-warning btn-sm rounded-2" data-bs-toggle="modal" data-bs-target="#editAnggotaModal" onclick="loadEditForm('<?= $row['nis']; ?>')">
                   <i class="fas fa-edit"></i> Edit
                 </button>
               </td>
@@ -191,10 +191,10 @@ $result->execute();
 
 <script>
   // Ajax Edit Anggota
-  function loadEditForm(nim) {
+  function loadEditForm(nis) {
     const modalContent = document.getElementById('editModalContent');
     modalContent.innerHTML = '<p class="text-center text-muted">Loading...</p>';
-    fetch(`edit_anggota.php?nim=${nim}`)
+    fetch(`edit_anggota.php?nis=${nis}`)
       .then(response => response.text())
       .then(data => {
         modalContent.innerHTML = data;
@@ -233,10 +233,11 @@ $result->execute();
 
           // Tambahkan event listener untuk dropdown jurusan dan kelas
           const jurusanToKelas = {
-            "D4 Teknologi Rekayasa Perangkat Lunak": ["23A1"],
-            "S1 Teknik Informatika": ["23A1", "23A2", "23A3", "23A4", "23A5", "23A6"],
-            "S1 Sistem Informasi": ["23A1", "23A2"],
-            "D3 Teknik Komputer": ["23A1"]
+            "Akuntansi dan Keuangan Lembaga": ["X", "XI", "XII"],
+            "Otomatisasi dan Tata Kelola Perkantoran": ["X", "XI", "XII"],
+            "Bisnis Daring dan Pemasaran": ["X", "XI", "XII"],
+            "Rekayasa Perangkat Lunak": ["X", "XI", "XII"],
+            "Akomodasi Perhotelan": ["X", "XI", "XII"]
           };
 
           const jurusanDropdown = document.getElementById('jurusan');

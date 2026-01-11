@@ -20,7 +20,7 @@ $result = $conn->prepare("
     FROM detail_peminjaman dp
     INNER JOIN buku b ON dp.kode_buku = b.kode_buku
     INNER JOIN peminjaman pm ON dp.kode_pinjam = pm.kode_pinjam
-    INNER JOIN anggota a ON pm.nim = a.nim
+    INNER JOIN anggota a ON pm.nis = a.nis
     INNER JOIN petugas p ON pm.id_petugas = p.id_petugas
     LIMIT :limit OFFSET :offset
 ");

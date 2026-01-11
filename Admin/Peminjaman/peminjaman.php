@@ -48,7 +48,7 @@ $query = "
     GROUP_CONCAT(dp.kondisi_buku_pinjam SEPARATOR ', ') AS kondisi_buku_pinjam,
     IF(k.kode_pinjam IS NULL, 'Dipinjam', 'Dikembalikan') AS status
   FROM peminjaman p
-  INNER JOIN anggota a ON p.nim = a.nim
+  INNER JOIN anggota a ON p.nis = a.nis
   INNER JOIN detail_peminjaman dp ON p.kode_pinjam = dp.kode_pinjam
   INNER JOIN buku b ON dp.kode_buku = b.kode_buku
   INNER JOIN petugas pt ON p.id_petugas = pt.id_petugas
@@ -69,7 +69,7 @@ $stmt->execute();
 <section class="home-section">
   <div class="mt-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
-      <h2 class="fw-bold text-dark mb-0">Data Peminjaman buk</h2>
+      <h2 class="fw-bold text-dark mb-0">Data Peminjaman</h2>
       <div class="d-flex align-items-between gap-3">
         <!-- Filter Status -->
         <div class="dropdown rounded-3">
@@ -235,11 +235,11 @@ $stmt->execute();
   });
 
   function setupAutocomplete() {
-    const inputNim = document.getElementById('nim');
+    const inputNis = document.getElementById('nis');
     const searchResults = document.getElementById('search_results');
 
-    inputNim.addEventListener('input', function() {
-      const query = inputNim.value;
+    inputNis.addEventListener('input', function() {
+      const query = inputNis.value;
 
       if (query.length > 0) {
         fetch(`search_anggota.php?query=${query}`)
@@ -248,8 +248,8 @@ $stmt->execute();
             let html = '';
             if (data.length > 0) {
               data.forEach(item => {
-                html += `<div class="autocomplete-item" onclick="selectAnggota('${item.nim}', '${item.nama}')">
-                          <strong>${item.nim}</strong> - ${item.nama}
+                html += `<div class="autocomplete-item" onclick="selectAnggota('${item.nis}', '${item.nama}')">
+                          <strong>${item.nis}</strong> - ${item.nama}
                         </div>`;
               });
             } else {
@@ -265,8 +265,8 @@ $stmt->execute();
     });
 
     // Fungsi untuk memilih item dari hasil autocomplete
-    window.selectAnggota = function(nim, nama) {
-      inputNim.value = nim;
+    window.selectAnggota = function(nis, nama) {
+      inputNis.value = nis;
       searchResults.innerHTML = '';
       searchResults.style.display = 'none';
     };

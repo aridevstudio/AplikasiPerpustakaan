@@ -15,7 +15,7 @@ if (isset($_GET['kode_pinjam'])) {
         p.estimasi_pinjam,
         GROUP_CONCAT(dp.kondisi_buku_pinjam SEPARATOR ', ') AS kondisi_buku_pinjam
     FROM peminjaman p
-    INNER JOIN anggota a ON p.nim = a.nim
+    INNER JOIN anggota a ON p.nis = a.nis
     INNER JOIN detail_peminjaman dp ON p.kode_pinjam = dp.kode_pinjam
     INNER JOIN buku b ON dp.kode_buku = b.kode_buku
     INNER JOIN petugas pt ON p.id_petugas = pt.id_petugas
@@ -119,7 +119,7 @@ if (isset($_GET['kode_pinjam'])) {
                     <!-- Logo Perpustakaan -->
                     <img src="../../Assets/img/logo2.svg" alt="Logo Perpustakaan">
                     <h1>Perpustakaan Pusaku</h1>
-                    <p>Jl. Tasyuka No. 12, Kota Surakarta</p>
+                    <p>Jl.Pelabuhan II KM 8 Tegallega Kota Sukabumi</p>
                 </div>
                 <div class="details">
                     <table>

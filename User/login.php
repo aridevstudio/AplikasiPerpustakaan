@@ -4,13 +4,13 @@ include '../Config/koneksi.php'; // Pastikan path file config benar
 
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nim = $_POST['nim'];
+    $nis = $_POST['nis'];
     $password = $_POST['password'];
 
     try {
         // Query untuk memeriksa data di tabel anggota
-        $stmt = $conn->prepare("SELECT nim, password, nama FROM anggota WHERE nim = :nim");
-        $stmt->bindParam(':nim', $nim, PDO::PARAM_STR);
+        $stmt = $conn->prepare("SELECT nis, password, nama FROM anggota WHERE nis = :nis");
+        $stmt->bindParam(':nis', $nis, PDO::PARAM_STR);
         $stmt->execute();
 
         if ($stmt->rowCount() > 0) {
@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Verifikasi password
             if ($password === $user['password']) { // Ganti dengan password_verify jika menggunakan hash
-                $_SESSION['nim'] = $user['nim'];
+                $_SESSION['nis'] = $user['nis'];
                 $_SESSION['nama'] = $user['nama'];
 
                 header('Location: home.php'); // Ganti dengan halaman utama setelah login
@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $error = 'Password salah!';
             }
         } else {
-            $error = 'NIM tidak ditemukan!';
+            $error = 'NIS tidak ditemukan!';
         }
     } catch (PDOException $e) {
         $error = 'Terjadi kesalahan: ' . $e->getMessage();
@@ -68,13 +68,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <form method="POST" action="">
             <div class="mb-3">
-                <label for="nim" class="form-label">NIM</label>
+                <label for="nis" class="form-label">NIS</label>
                 <input
                     type="text"
-                    name="nim"
+                    name="nis"
                     class="form-control"
-                    id="nim"
-                    placeholder="Nim"
+                    id="nis"
+                    placeholder="Nis"
                     required />
             </div>
             <div class="mb-3 mt-4">

@@ -2,7 +2,7 @@
 require_once '../../Config/koneksi.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nim = $_POST['nim'];
+    $nis = $_POST['nis'];
     $nama = $_POST['nama'];
     $jenis_kelamin = $_POST['jenis_kelamin'];
     $kelas = $_POST['kelas'];
@@ -12,14 +12,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $status_mhs = 'Aktif'; // Default status mahasiswa
 
     try {
-        // Cek apakah NIM sudah ada
-        $stmt = $conn->prepare("SELECT COUNT(*) FROM anggota WHERE nim = ?");
-        $stmt->execute([$nim]);
-        $nim_exists = $stmt->fetchColumn();
+        // Cek apakah NIS sudah ada
+        $stmt = $conn->prepare("SELECT COUNT(*) FROM anggota WHERE nis = ?");
+        $stmt->execute([$nis]);
+        $nis_exists = $stmt->fetchColumn();
 
-        if ($nim_exists > 0) {
+        if ($nis_exists > 0) {
             echo "<script>
-                    alert('NIM sudah terdaftar. Harap masukkan NIM yang berbeda.');
+                    alert('NIS sudah terdaftar. Harap masukkan NIS yang berbeda.');
                     window.history.back(); // Kembali ke form
                 </script>";
             exit;
@@ -28,10 +28,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Simpan password langsung tanpa hashing (plaintext)
         // $hashed_password = password_hash($password, PASSWORD_DEFAULT); // Dihapus karena kita tidak ingin hashing
 
-        // Jika NIM belum ada, lanjutkan proses simpan
-        $stmt = $conn->prepare("INSERT INTO anggota (nim, nama, jenis_kelamin, kelas, tgl_lahir, jurusan, no_telp, status_mhs) 
+        // Jika NIS belum ada, lanjutkan proses simpan
+        $stmt = $conn->prepare("INSERT INTO anggota (nis, nama, jenis_kelamin, kelas, tgl_lahir, jurusan, no_telp, status_mhs) 
                                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->execute([$nim, $nama, $jenis_kelamin, $kelas, $tgl_lahir, $jurusan, $no_telp, $status_mhs]); // Simpan password asli (plaintext)
+        $stmt->execute([$nis, $nama, $jenis_kelamin, $kelas, $tgl_lahir, $jurusan, $no_telp, $status_mhs]); // Simpan password asli (plaintext)
 
         if ($stmt) {
             echo "<script>
@@ -51,17 +51,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <form method="POST" action="add_anggota.php">
         <div class="row g-3">
             <div class="col-md-6">
-                <label for="nim" class="form-label">NIM</label>
-                <input type="number" class="form-control" id="nim" name="nim" placeholder="Contoh: 230103161" required pattern="\d+" title="Hanya boleh angka">
+                <label for="nis" class="form-label">NIS</label>
+                <input type="number" class="form-control" id="nis" name="nis" placeholder="Contoh: 230103161" required pattern="\d+" title="Hanya boleh angka">
             </div>
             <div class="col-md-6">
                 <label for="jurusan" class="form-label">Jurusan</label>
                 <select class="form-select" id="jurusan" name="jurusan" required>
                     <option value="" disabled selected>Pilih Jurusan Anda</option>
-                    <option value="D4 Teknologi Rekayasa Perangkat Lunak">D4 Teknologi Rekayasa Perangkat Lunak</option>
-                    <option value="S1 Teknik Informatika">S1 Teknik Informatika</option>
-                    <option value="S1 Sistem Informasi">S1 Sistem Informasi</option>
-                    <option value="D3 Teknik Komputer">D3 Teknik Komputer</option>
+                    <option value="Akuntansi dan Keuangan Lembaga">Akuntansi dan Keuangan Lembaga</option>
+                    <option value="Otomatisasi dan Tata Kelola Perkantoran">Otomatisasi dan Tata Kelola Perkantoran</option>
+                    <option value="Bisnis Daring dan Pemasaran">Bisnis Daring dan Pemasaran</option>
+                    <option value="Rekayasa Perangkat Lunak">Rekayasa Perangkat Lunak</option>
+                    <option value="Akomodasi Perhotelan">Akomodasi Perhotelan</option>
                 </select>
             </div>
             <div class="col-md-6">
@@ -105,8 +106,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </div>
 
 <script>
-    const nimInput = document.getElementById('nim');
-    nimInput.addEventListener('input', function() {
+    const nisInput = document.getElementById('nis');
+    nisInput.addEventListener('input', function() {
         this.value = this.value.replace(/[^0-9]/g, ''); // Menghapus karakter selain angka
     });
 </script>

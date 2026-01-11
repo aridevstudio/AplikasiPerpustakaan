@@ -10,7 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['kode_pinjam'])) {
 
   // Ambil data peminjaman berdasarkan ID
   $sql = "
-      SELECT peminjaman.kode_pinjam, peminjaman.nim, peminjaman.kode_buku, 
+      SELECT peminjaman.kode_pinjam, peminjaman.nis, peminjaman.kode_buku, 
              peminjaman.id_petugas, peminjaman.tgl_pinjam, 
              peminjaman.estimasi_pinjam, peminjaman.kondisi_buku_pinjam
       FROM peminjaman
@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['kode_pinjam'])) {
   }
 
   // Query untuk mengambil data anggota, buku, dan petugas
-  $anggota = $conn->query("SELECT nim, nama FROM anggota WHERE status_mhs = 'Aktif'")->fetchAll(PDO::FETCH_ASSOC);
+  $anggota = $conn->query("SELECT nis, nama FROM anggota WHERE status_mhs = 'Aktif'")->fetchAll(PDO::FETCH_ASSOC);
   $buku = $conn->query("SELECT kode_buku, judul_buku FROM buku")->fetchAll(PDO::FETCH_ASSOC);
   $petugas = $conn->query("SELECT id_petugas, nama_petugas FROM petugas")->fetchAll(PDO::FETCH_ASSOC);
 }
@@ -37,18 +37,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['kode_pinjam'])) {
 // Proses update data peminjaman
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $kode_pinjam = $_POST['kode_pinjam'];
-  $nim = $_POST['nim'];
+  $nis = $_POST['nis'];
   $kode_buku = $_POST['kode_buku'];
   $id_petugas = $_POST['id_petugas'];
   $estimasi_pinjam = $_POST['estimasi_pinjam'];
   $kondisi_buku_pinjam = $_POST['kondisi_buku_pinjam'];
 
-  if (empty($nim) || empty($kode_buku) || empty($id_petugas) || empty($estimasi_pinjam) || empty($kondisi_buku_pinjam)) {
+  if (empty($nis) || empty($kode_buku) || empty($id_petugas) || empty($estimasi_pinjam) || empty($kondisi_buku_pinjam)) {
       echo '<script>alert("Semua bidang wajib diisi!");</script>';
   } else {
       $sql = "
           UPDATE peminjaman
-          SET nim = :nim, 
+          SET nis = :nis, 
               kode_buku = :kode_buku, 
               id_petugas = :id_petugas, 
               estimasi_pinjam = :estimasi_pinjam, 
@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       ";
 
       $stmt = $conn->prepare($sql);
-      $stmt->bindValue(':nim', $nim);
+      $stmt->bindValue(':nis', $nis);
       $stmt->bindValue(':kode_buku', $kode_buku);
       $stmt->bindValue(':id_petugas', $id_petugas);
       $stmt->bindValue(':estimasi_pinjam', $estimasi_pinjam);
@@ -81,12 +81,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="row">
       <div class="col-md-6">
         <div class="mb-3">
-          <label for="nim" class="form-label">Anggota</label>
-          <select name="nim" id="nim" class="form-select" required>
+          <label for="nis" class="form-label">Anggota</label>
+          <select name="nis" id="nis" class="form-select" required>
             <option value="">Pilih Anggota</option>
             <?php foreach ($anggota as $a): ?>
-              <option value="<?= $a['nim']; ?>" <?= $a['nim'] === $data['nim'] ? 'selected' : ''; ?>>
-                <?= $a['nim']; ?> - <?= $a['nama']; ?>
+              <option value="<?= $a['nis']; ?>" <?= $a['nis'] === $data['nis'] ? 'selected' : ''; ?>>
+                <?= $a['nis']; ?> - <?= $a['nama']; ?>
               </option>
             <?php endforeach; ?>
           </select>

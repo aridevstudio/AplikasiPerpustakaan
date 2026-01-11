@@ -62,14 +62,14 @@
           </div>
         </div>
 
-        <!-- NIM -->
+        <!-- NIS -->
         <div class="mb-3">
-          <label for="nim" class="form-label">NIM</label>
+          <label for="nis" class="form-label">NIS</label>
           <input
             type="text"
             class="form-control"
-            id="nim"
-            placeholder="Enter your NIM"
+            id="nis"
+            placeholder="Enter your NIS"
             required
           />
         </div>
@@ -91,10 +91,11 @@
           <label for="major" class="form-label">Major</label>
           <select class="form-select" id="major" required>
             <option value="" selected disabled>Select your major</option>
-            <option value="Informatics">Informatics</option>
-            <option value="Computer Science">Computer Science</option>
-            <option value="Information Systems">Information Systems</option>
-            <option value="Cybersecurity">Cybersecurity</option>
+           <option value="Akuntansi dan Keuangan Lembaga">Akuntansi dan Keuangan Lembaga</option>
+                    <option value="Otomatisasi dan Tata Kelola Perkantoran">Otomatisasi dan Tata Kelola Perkantoran</option>
+                    <option value="Bisnis Daring dan Pemasaran">Bisnis Daring dan Pemasaran</option>
+                    <option value="Rekayasa Perangkat Lunak">Rekayasa Perangkat Lunak</option>
+                    <option value="Akomodasi Perhotelan">Akomodasi Perhotelan</option>
           </select>
         </div>
 

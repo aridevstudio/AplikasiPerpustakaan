@@ -2,11 +2,11 @@
 require_once '../Config/koneksi.php';
 include 'header.php';
 
-$nim = $_SESSION['nim'];
+$nis = $_SESSION['nis'];
 
 try {
-    $query = $conn->prepare("SELECT * FROM anggota WHERE nim = :nim");
-    $query->bindParam(':nim', $nim);
+    $query = $conn->prepare("SELECT * FROM anggota WHERE nis = :nis");
+    $query->bindParam(':nis', $nis);
     $query->execute();
     $mhs = $query->fetch(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
@@ -30,7 +30,7 @@ try {
                 </div>
                 <div class="col-md-9 mt-3 mt-md-0">
                     <h1 class="profile-name text-center mb-2"><?= $mhs['nama'] ?></h1>
-                    <p class="me-2 text-center"><?= $mhs['nim'] ?></p>
+                    <p class="me-2 text-center"><?= $mhs['nis'] ?></p>
                 </div>
             </div>
         </div>
@@ -213,7 +213,7 @@ try {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    nim: <?= $nim ?>,
+                    nis: <?= $nis ?>,
                     ...formData
                 })
             })

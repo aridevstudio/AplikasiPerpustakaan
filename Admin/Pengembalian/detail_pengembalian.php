@@ -7,7 +7,7 @@ if (isset($_GET['id'])) {
     $query = $conn->prepare("
         SELECT 
             pengembalian.id_kembali,
-            anggota.nim,
+            anggota.nis,
             anggota.nama AS nama_anggota,
             buku.kode_buku,
             buku.judul_buku,
@@ -18,7 +18,7 @@ if (isset($_GET['id'])) {
             pengembalian.denda
         FROM pengembalian
         JOIN peminjaman ON pengembalian.id_pinjam = peminjaman.id_pinjam
-        JOIN anggota ON peminjaman.nim = anggota.nim
+        JOIN anggota ON peminjaman.nis = anggota.nis
         JOIN buku ON peminjaman.kode_buku = buku.kode_buku
         JOIN petugas ON peminjaman.id_petugas = petugas.id_petugas
         WHERE pengembalian.id_kembali = :id
@@ -42,8 +42,8 @@ if (isset($_GET['id'])) {
                                 <td><?php echo htmlspecialchars($detail['nama_anggota']); ?></td>
                             </tr>
                             <tr>
-                                <th>NIM</th>
-                                <td><?php echo htmlspecialchars($detail['nim']); ?></td>
+                                <th>NIS</th>
+                                <td><?php echo htmlspecialchars($detail['nis']); ?></td>
                             </tr>
                             <tr>
                                 <th>Kode Buku</th>

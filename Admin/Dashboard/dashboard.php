@@ -40,7 +40,7 @@ $tanggal_hari_ini = date('jS F Y'); // Format: 14th Aug 2023
 $queryPinjamKembali = "
     SELECT p.kode_pinjam, a.nama, p.estimasi_pinjam
     FROM peminjaman p
-    JOIN anggota a ON p.nim = a.nim
+    JOIN anggota a ON p.nis = a.nis
     WHERE p.estimasi_pinjam < CURDATE() AND p.status = 'Dipinjam'
 ";
 $stmtPinjamKembali = $conn->query($queryPinjamKembali);
@@ -50,7 +50,7 @@ $queryBelumLunas = "
     SELECT pk.kode_kembali, a.nama, pk.denda, pk.pembayaran
     FROM pengembalian pk
     JOIN peminjaman p ON pk.kode_pinjam = p.kode_pinjam
-    JOIN anggota a ON p.nim = a.nim
+    JOIN anggota a ON p.nis = a.nis
     WHERE pk.status = 'Belum Lunas'
 ";
 $stmtBelumLunas = $conn->query($queryBelumLunas);
@@ -167,7 +167,7 @@ $stmtBelumLunas = $conn->query($queryBelumLunas);
                             <!-- Grid of days will go here -->
                         </div>
                     </div>
-                    <div class="anime-image ms-3" style="width: 50%; padding: px;">
+                    <div class="anise-image ms-3" style="width: 50%; padding: px;">
                         <img id="random-image" src="https://via.placeholder.com/150" alt="Mirrored Image" class="img-fluid rounded-3" style="transform: scaleX(-1);" />
                     </div>
                 </div>

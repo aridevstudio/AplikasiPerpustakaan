@@ -18,8 +18,8 @@
         <form method="POST" action="Anggota/add_anggota.php">
             <div class="row g-3">
                 <div class="col-md-6">
-                    <label for="nim" class="form-label">NIM</label>
-                    <input type="text" class="form-control" id="nim" name="nim" placeholder="Contoh: 230103161" required>
+                    <label for="nis" class="form-label">NIS</label>
+                    <input type="text" class="form-control" id="nis" name="nis" placeholder="Contoh: 230103161" required>
                 </div>
                 <div class="col-md-6">
                     <label for="nama" class="form-label">Nama</label>
@@ -37,10 +37,11 @@
                     <label for="jurusan" class="form-label">Jurusan</label>
                     <select class="form-select" id="jurusan" name="jurusan" required>
                         <option value="" disabled selected>Pilih Jurusan Anda</option>
-                        <option value="D4 Teknologi Rekayasa Perangkat Lunak">D4 Teknologi Rekayasa Perangkat Lunak</option>
-                        <option value="S1 Teknik Informatika">S1 Teknik Informatika</option>
-                        <option value="S1 Sistem Informasi">S1 Sistem Informasi</option>
-                        <option value="D3 Teknik Komputer">D3 Teknik Komputer</option>
+                       <option value="Akuntansi dan Keuangan Lembaga">Akuntansi dan Keuangan Lembaga</option>
+                    <option value="Otomatisasi dan Tata Kelola Perkantoran">Otomatisasi dan Tata Kelola Perkantoran</option>
+                    <option value="Bisnis Daring dan Pemasaran">Bisnis Daring dan Pemasaran</option>
+                    <option value="Rekayasa Perangkat Lunak">Rekayasa Perangkat Lunak</option>
+                    <option value="Akomodasi Perhotelan">Akomodasi Perhotelan</option>
                     </select>
                 </div>
                 <div class="col-md-6">
@@ -66,10 +67,11 @@
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const jurusanToKelas = {
-                "D4 Teknologi Rekayasa Perangkat Lunak": ["TRPL23-23A1"],
-                "S1 Teknik Informatika": ["TI23-23A1", "TI23-23A2", "TI23-23A3", "TI23-23A4", "TI23-23A5", "TI23-23A6"],
-                "S1 Sistem Informasi": ["SI23-23A1", "SI23-23A2"],
-                "D3 Teknik Komputer": ["TK23-23A1"]
+                 "Akuntansi dan Keuangan Lembaga": ["X", "XI", "XII"],
+            "Otomatisasi dan Tata Kelola Perkantoran": ["X", "XI", "XII"],
+            "Bisnis Daring dan Pemasaran": ["X", "XI", "XII"],
+            "Rekayasa Perangkat Lunak": ["X", "XI", "XII"],
+            "Akomodasi Perhotelan": ["X", "XI", "XII"]
             };
 
             const jurusanDropdown = document.getElementById("jurusan");

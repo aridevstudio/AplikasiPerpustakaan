@@ -2,7 +2,7 @@
 require_once '../Config/koneksi.php';
 include 'header.php';
 
-$nim = $_SESSION['nim'];
+$nis = $_SESSION['nis'];
 
 /* =========================
    QUERY RIWAYAT PEMINJAMAN
@@ -29,11 +29,11 @@ $queryHistory = $conn->prepare("
         ON dp.kode_buku = b.kode_buku
     LEFT JOIN pengembalian pg 
         ON p.kode_pinjam = pg.kode_pinjam
-    WHERE p.nim = :nim
+    WHERE p.nis = :nis
     ORDER BY p.tgl_pinjam DESC
 ");
 
-$queryHistory->bindParam(':nim', $nim);
+$queryHistory->bindParam(':nis', $nis);
 $queryHistory->execute();
 $history = $queryHistory->fetchAll(PDO::FETCH_ASSOC);
 
@@ -43,9 +43,9 @@ $history = $queryHistory->fetchAll(PDO::FETCH_ASSOC);
 $queryTotal = $conn->prepare("
     SELECT COUNT(DISTINCT kode_pinjam) AS total 
     FROM peminjaman 
-    WHERE nim = :nim
+    WHERE nis = :nis
 ");
-$queryTotal->bindParam(':nim', $nim);
+$queryTotal->bindParam(':nis', $nis);
 $queryTotal->execute();
 $totalPinjaman = $queryTotal->fetch(PDO::FETCH_ASSOC)['total'];
 
@@ -61,9 +61,9 @@ $queryLate = $conn->prepare("
     FROM peminjaman p
     LEFT JOIN pengembalian pg 
         ON p.kode_pinjam = pg.kode_pinjam
-    WHERE p.nim = :nim
+    WHERE p.nis = :nis
 ");
-$queryLate->bindParam(':nim', $nim);
+$queryLate->bindParam(':nis', $nis);
 $queryLate->execute();
 $totalTerlambat = $queryLate->fetch(PDO::FETCH_ASSOC)['total_hari'] ?? 0;
 ?>

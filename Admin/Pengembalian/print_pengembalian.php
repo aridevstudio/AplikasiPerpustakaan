@@ -27,7 +27,7 @@ if (isset($_GET['kode_kembali'])) {
     JOIN peminjaman p 
         ON pg.kode_pinjam = p.kode_pinjam
     JOIN anggota a 
-        ON p.nim = a.nim
+        ON p.nis = a.nis
     JOIN detail_peminjaman dp 
         ON p.kode_pinjam = dp.kode_pinjam
     JOIN buku b 
@@ -153,7 +153,7 @@ if (isset($_GET['kode_kembali'])) {
                     <!-- Logo Perpustakaan -->
                     <img src="../../Assets/img/logo2.svg" alt="Logo Perpustakaan">
                     <h1>Perpustakaan Pusaku</h1>
-                    <p>Jl. Tasyuka No. 12, Kota Surakarta</p>
+                    <p>Jl.Pelabuhan II KM 8 Tegallega Kota Sukabumi </p>
                 </div>
                 <div class="details">
                     <table>

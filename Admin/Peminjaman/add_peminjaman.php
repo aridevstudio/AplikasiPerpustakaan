@@ -4,7 +4,7 @@ require_once '../../Config/koneksi.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-  $nim = $_POST['nim'];
+  $nis = $_POST['nis'];
   $kode_buku = $_POST['kode_buku'];
   $id_petugas = $_POST['id_petugas'];
   $tgl_pinjam = $_POST['tgl_pinjam'];
@@ -17,11 +17,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $cekSql = "
     SELECT COUNT(*) AS total
     FROM peminjaman p
-    WHERE p.nim = :nim
+    WHERE p.nis = :nis
     AND p.status = 'Dipinjam'
   ";
   $cekStmt = $conn->prepare($cekSql);
-  $cekStmt->execute([':nim' => $nim]);
+  $cekStmt->execute([':nis' => $nis]);
   $totalPinjam = $cekStmt->fetch(PDO::FETCH_ASSOC)['total'];
 
   if ($totalPinjam >= 2) {
@@ -54,14 +54,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // 1️⃣ Insert ke tabel peminjaman (HEADER)
     $sqlPeminjaman = "
       INSERT INTO peminjaman 
-      (kode_pinjam, nim, id_petugas, tgl_pinjam, estimasi_pinjam, status)
+      (kode_pinjam, nis, id_petugas, tgl_pinjam, estimasi_pinjam, status)
       VALUES 
-      (:kode_pinjam, :nim, :id_petugas, :tgl_pinjam, :estimasi_pinjam, 'Dipinjam')
+      (:kode_pinjam, :nis, :id_petugas, :tgl_pinjam, :estimasi_pinjam, 'Dipinjam')
     ";
     $stmtPeminjaman = $conn->prepare($sqlPeminjaman);
     $stmtPeminjaman->execute([
       ':kode_pinjam' => $kode_pinjam,
-      ':nim' => $nim,
+      ':nis' => $nis,
       ':id_petugas' => $id_petugas,
       ':tgl_pinjam' => $tgl_pinjam,
       ':estimasi_pinjam' => $estimasi_pinjam
@@ -113,7 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   }
 }
 
-$anggota = $conn->query("SELECT nim, nama FROM anggota WHERE status_mhs = 'Aktif'")->fetchAll(PDO::FETCH_ASSOC);
+$anggota = $conn->query("SELECT nis, nama FROM anggota WHERE status_mhs = 'Aktif'")->fetchAll(PDO::FETCH_ASSOC);
 $buku = $conn->query("SELECT kode_buku, judul_buku FROM buku WHERE stok > 0")->fetchAll(PDO::FETCH_ASSOC);
 $petugas = $conn->query("SELECT id_petugas, nama_petugas FROM petugas WHERE status = 'Aktif'")->fetchAll(PDO::FETCH_ASSOC);
 ?>
@@ -125,8 +125,8 @@ $petugas = $conn->query("SELECT id_petugas, nama_petugas FROM petugas WHERE stat
       <div class="col-md-6">
         <!-- Pilih Anggota -->
         <div class="mb-3">
-          <label for="nim" class="form-label">Anggota</label>
-          <input autocomplete="off" type="text" id="nim" name="nim" class="form-control" placeholder="Cari Anggota..." required>
+          <label for="nis" class="form-label">Anggota</label>
+          <input autocomplete="off" type="text" id="nis" name="nis" class="form-control" placeholder="Cari Anggota..." required>
           <div id="search_results" class="mt-2"></div> <!-- Menampilkan hasil pencarian -->
         </div>
       </div>

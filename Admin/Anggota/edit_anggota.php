@@ -1,11 +1,11 @@
 <?php
 require_once '../../Config/koneksi.php';
 
-$nim = $_GET['nim'] ?? '';
+$nis = $_GET['nis'] ?? '';
 
-// Query untuk mendapatkan data anggota berdasarkan NIM
-$stmt = $conn->prepare("SELECT * FROM Anggota WHERE nim = ?");
-$stmt->execute([$nim]);
+// Query untuk mendapatkan data anggota berdasarkan NIS
+$stmt = $conn->prepare("SELECT * FROM Anggota WHERE nis = ?");
+$stmt->execute([$nis]);
 $anggota = $stmt->fetch(PDO::FETCH_ASSOC) ?? [
   'nama' => '',
   'jenis_kelamin' => '',
@@ -70,5 +70,5 @@ $anggota = $stmt->fetch(PDO::FETCH_ASSOC) ?? [
     <button type="reset" class="btn btn-danger me-2">Reset</button>
     <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
   </div>
-  <input type="hidden" name="nim" value="<?= htmlspecialchars($nim); ?>">
+  <input type="hidden" name="nis" value="<?= htmlspecialchars($nis); ?>">
 </form>

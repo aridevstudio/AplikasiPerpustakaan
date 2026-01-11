@@ -2,7 +2,7 @@
 session_start();
 require_once '../Config/koneksi.php'; // Sesuaikan path dengan struktur folder
 
-if (!isset($_SESSION['nim'])) {
+if (!isset($_SESSION['nis'])) {
   header('Location: login.php');
   exit;
 }

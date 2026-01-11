@@ -24,7 +24,7 @@ $stmt = $conn->prepare("
     JOIN peminjaman p 
         ON pg.kode_pinjam = p.kode_pinjam
     JOIN anggota a 
-        ON p.nim = a.nim
+        ON p.nis = a.nis
     JOIN detail_peminjaman dp 
         ON p.kode_pinjam = dp.kode_pinjam
     JOIN buku b 

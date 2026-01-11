@@ -28,7 +28,7 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `anggota` (
-  `nim` int NOT NULL,
+  `nis` int NOT NULL,
   `nama` varchar(100) NOT NULL,
   `jenis_kelamin` enum('Laki-Laki','Perempuan') NOT NULL,
   `jurusan` varchar(40) NOT NULL,
@@ -37,13 +37,13 @@ CREATE TABLE `anggota` (
   `status_mhs` enum('Aktif','Tidak Aktif') NOT NULL,
   `no_telp` varchar(15) DEFAULT NULL,
   `password` varchar(50) DEFAULT 'mhsudb123'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `anggota`
 --
 
-INSERT INTO `anggota` (`nim`, `nama`, `jenis_kelamin`, `jurusan`, `kelas`, `tgl_lahir`, `status_mhs`, `no_telp`, `password`) VALUES
+INSERT INTO `anggota` (`nis`, `nama`, `jenis_kelamin`, `jurusan`, `kelas`, `tgl_lahir`, `status_mhs`, `no_telp`, `password`) VALUES
 (1, 'Andi Saputra', 'Laki-Laki', 'Informatika', 'IF-1', '2003-05-12', 'Aktif', '081234567890', '123456'),
 (2, 'Siti Aminah', 'Perempuan', 'Sistem Informasi', 'SI-2', '2002-11-20', 'Aktif', '082345678901', '123456'),
 (23123452, 'Aji Ramdani', 'Laki-Laki', 'S1 Teknik Informatika', 'asas', '2026-01-10', 'Aktif', '+6289508742700', 'mhsudb123');
@@ -67,7 +67,7 @@ CREATE TABLE `buku` (
   `deskripsi_buku` text NOT NULL,
   `stok` int DEFAULT '0',
   `status` enum('Tersedia','Dipinjam','Kosong') NOT NULL DEFAULT 'Tersedia'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `buku`
@@ -104,7 +104,7 @@ CREATE TABLE `detail_peminjaman` (
   `kode_pinjam` varchar(6) NOT NULL,
   `kode_buku` varchar(10) NOT NULL,
   `kondisi_buku_pinjam` enum('Bagus','Rusak') NOT NULL DEFAULT 'Bagus'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `detail_peminjaman`
@@ -127,7 +127,7 @@ CREATE TABLE `owner` (
   `password` varchar(60) NOT NULL,
   `nama_pemilik` varchar(100) NOT NULL,
   `profil_gambar` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `owner`
@@ -144,18 +144,18 @@ INSERT INTO `owner` (`id_owner`, `username`, `password`, `nama_pemilik`, `profil
 
 CREATE TABLE `peminjaman` (
   `kode_pinjam` varchar(6) NOT NULL,
-  `nim` int NOT NULL,
+  `nis` int NOT NULL,
   `id_petugas` int NOT NULL,
   `tgl_pinjam` datetime DEFAULT CURRENT_TIMESTAMP,
   `estimasi_pinjam` datetime DEFAULT NULL,
   `status` enum('Dipinjam','Dikembalikan') NOT NULL DEFAULT 'Dipinjam'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `peminjaman`
 --
 
-INSERT INTO `peminjaman` (`kode_pinjam`, `nim`, `id_petugas`, `tgl_pinjam`, `estimasi_pinjam`, `status`) VALUES
+INSERT INTO `peminjaman` (`kode_pinjam`, `nis`, `id_petugas`, `tgl_pinjam`, `estimasi_pinjam`, `status`) VALUES
 ('PN001', 2, 1, '2026-01-17 00:00:00', '2026-01-28 00:00:00', 'Dikembalikan'),
 ('PN002', 23123452, 1, '2026-01-15 00:00:00', '2026-01-22 00:00:00', 'Dikembalikan'),
 ('PN003', 1, 1, '2026-01-01 00:00:00', '2026-01-03 00:00:00', 'Dikembalikan');
@@ -174,7 +174,7 @@ CREATE TABLE `pengembalian` (
   `denda` double(10,2) DEFAULT NULL,
   `status` enum('Lunas','Belum Lunas') DEFAULT NULL,
   `pembayaran` enum('Tidak Ada','Cash','Transfer') DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `pengembalian`
@@ -212,7 +212,7 @@ CREATE TABLE `petugas` (
   `no_telp` char(15) NOT NULL,
   `profil_gambar` varchar(255) NOT NULL,
   `status` enum('Aktif','Tidak Aktif') NOT NULL DEFAULT 'Aktif'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `petugas`
@@ -230,7 +230,7 @@ INSERT INTO `petugas` (`id_petugas`, `nama_petugas`, `username`, `password`, `je
 -- Indexes for table `anggota`
 --
 ALTER TABLE `anggota`
-  ADD PRIMARY KEY (`nim`);
+  ADD PRIMARY KEY (`nis`);
 
 --
 -- Indexes for table `buku`
@@ -257,7 +257,7 @@ ALTER TABLE `owner`
 --
 ALTER TABLE `peminjaman`
   ADD PRIMARY KEY (`kode_pinjam`),
-  ADD KEY `nim` (`nim`),
+  ADD KEY `nis` (`nis`),
   ADD KEY `id_petugas` (`id_petugas`);
 
 --
@@ -281,7 +281,7 @@ ALTER TABLE `petugas`
 -- AUTO_INCREMENT for table `anggota`
 --
 ALTER TABLE `anggota`
-  MODIFY `nim` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23123453;
+  MODIFY `nis` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23123453;
 
 --
 -- AUTO_INCREMENT for table `detail_peminjaman`
@@ -316,7 +316,7 @@ ALTER TABLE `detail_peminjaman`
 -- Constraints for table `peminjaman`
 --
 ALTER TABLE `peminjaman`
-  ADD CONSTRAINT `peminjaman_ibfk_1` FOREIGN KEY (`nim`) REFERENCES `anggota` (`nim`) ON DELETE CASCADE,
+  ADD CONSTRAINT `peminjaman_ibfk_1` FOREIGN KEY (`nis`) REFERENCES `anggota` (`nis`) ON DELETE CASCADE,
   ADD CONSTRAINT `peminjaman_ibfk_2` FOREIGN KEY (`id_petugas`) REFERENCES `petugas` (`id_petugas`) ON DELETE CASCADE;
 
 --

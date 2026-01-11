@@ -35,7 +35,7 @@ $buku = $query->fetchAll(PDO::FETCH_ASSOC);
             <div class="col-6 col-md-4">
                 <div class="card">
                     <!-- Cover Buku -->
-                    <img src="../Assets/uploads/<?= $b['cover'] ?>" class="img-fluid rounded-3" alt="<?= $b['judul_buku'] ?>" style="height: 200px; object-fit: cover;">
+                    <img src="../Assets/uploads/coverBK101.JPG" class="img-fluid rounded-3" alt="<?= $b['judul_buku'] ?>" style="height: 200px; object-fit: cover;">
                     <div class="card-body">
                         <!-- Judul Buku -->
                         <h5 class="card-title" style="font-size: 1rem;"><?= $b['judul_buku'] ?></h5>
