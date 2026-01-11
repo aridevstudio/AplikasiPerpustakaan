@@ -7,7 +7,7 @@ if (isset($_GET['kode_pinjam'])) {
     // Ambil data peminjaman berdasarkan ID
   $query = $conn->prepare("
     SELECT 
-        p.kode_pinjam,
+    p.kode_pinjam,
         a.nama AS nama_anggota,
         GROUP_CONCAT(b.judul_buku SEPARATOR ', ') AS judul_buku,
         pt.nama_petugas,
