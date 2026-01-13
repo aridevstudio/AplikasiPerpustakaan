@@ -49,7 +49,7 @@
        <li><i class="bi bi-check-circle-fill"></i> <span>Katalog buku lengkap</span></li>
        <li><i class="bi bi-check-circle-fill"></i> <span>Peminjaman online</span></li>
        <li><i class="bi bi-check-circle-fill"></i> <span>Riwayat peminjaman</span></li>
-      </ul><button class="role-btn"> <span>Masuk Sebagai User</span> </button>
+      </ul><button onclick="window.location.href='User/login.php'" class="role-btn"> <span>Masuk Sebagai User</span> </button>
      </div>
     </div><!-- Footer -->
     <div class="portal-footer">
